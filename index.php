@@ -1,4 +1,5 @@
 <?
+//master
 // > Нужно написать парсер csv файлов с данными (в качестве разделителя любой удобный символ):
 
 // 1. папка /import/ с вложенными подпапкам /YYYY/MM/DD в конечной папке несколько csv файлов
@@ -18,7 +19,6 @@ function logs ($string) {
 	fwrite($open_log, $log);
 	fclose($open_log);
 }
-
 
 function scan($dir) {
 	$scan = scandir($dir);
