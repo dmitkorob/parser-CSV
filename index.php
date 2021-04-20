@@ -15,9 +15,10 @@ function logs ($string, $conn) {
 	$create_table = mysqli_query($conn, 
 		"CREATE TABLE IF NOT EXISTS 'logs' (
 		id_log int PRIMARY KEY AUTO_INCREMENT,
-		date_log VARCHAR(255) NOT NULL,
+		date_log VARCHAR(256) NOT NULL,
 		`text` TEXT NOT NULL
 	)");
+	// echo 1;
 	$insert = mysqli_query($conn, "INSERT INTO 'logs' VALUES(NULL, `$date`, `$string`)");
 }
 
