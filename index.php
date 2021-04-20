@@ -13,13 +13,12 @@
 function logs ($string, $conn) {
 	$date = date('Y.m.d H:m:s');
 	$create_table = mysqli_query($conn, 
-		"CREATE TABLE IF NOT EXISTS 'logs' (
+		"CREATE TABLE IF NOT EXISTS `logs` (
 		id_log int PRIMARY KEY AUTO_INCREMENT,
 		date_log VARCHAR(256) NOT NULL,
 		`text` TEXT NOT NULL
 	)");
-	// echo 1;
-	$insert = mysqli_query($conn, "INSERT INTO 'logs' VALUES(NULL, `$date`, `$string`)");
+	$insert = mysqli_query($conn, "INSERT INTO `logs` VALUES(NULL, '$date', '$string')");
 }
 
 function scan($dir) {
