@@ -1,5 +1,5 @@
 <?
-//master2
+//master
 // > Нужно написать парсер csv файлов с данными (в качестве разделителя любой удобный символ):
 
 // 1. папка /import/ с вложенными подпапкам /YYYY/MM/DD в конечной папке несколько csv файлов
@@ -10,14 +10,15 @@
 
 // все события нужно логировать в отдельную таблицу
 
-function logs ($string) {
+function logs ($string, $conn) {
 	$date = date('Y.m.d H:m:s');
-	$log = '========================================================'.PHP_EOL;
-	$log .= $date."     ";
-	$log .= $string.PHP_EOL;
-	$open_log = fopen('log.txt', 'a+');
-	fwrite($open_log, $log);
-	fclose($open_log);
+	$create_table = mysqli_query($conn, 
+		"CREATE TABLE IF NOT EXISTS 'logs' (
+		id_log int PRIMARY KEY AUTO_INCREMENT,
+		date_log VARCHAR(255) NOT NULL,
+		`text` TEXT NOT NULL
+	)");
+	$insert = mysqli_query($conn, "INSERT INTO 'logs' VALUES(NULL, `$date`, `$string`)");
 }
 
 function scan($dir) {
@@ -28,8 +29,8 @@ function scan($dir) {
 		$way = $dir;
 		if(is_file($way.'/'.$val)) {
 			$way .='/'.$val;
-			echo "<pre>";
-			echo $way."<br>";
+			// echo "<pre>";
+			// echo $way."<br>";
 			pars($val, $way);
 		} else if(is_dir($way.'/'.$val)) {
 			$way .='/'.$val;
@@ -46,17 +47,13 @@ function pars($file, $way) {
 	$password = 'C1bwo8SOHFZoH56T';
 	$db_name = 'parser';
 
-	logs('Начало сканирования');
 	$conn = mysqli_connect($host, $login, $password);
-	if(!empty($conn)) {
-		logs('Подключение к PhpMyAdmin');
-	}
 	$create_db = mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS $db_name");
 	mysqli_close($conn);
-	if(isset($create_bd)) {
-		logs('Coздана база данных '.$db_name);
-	}
 	$connect = mysqli_connect($host, $login, $password, $db_name);
+	if(!empty($connect)) {
+		logs("Подключение к $db_name", $connect);
+	}
 	if(substr($file, -4) == '.csv'){
 		$create = mysqli_query($connect, "CREATE TABLE `{$file}` ( 
 			ID int PRIMARY KEY AUTO_INCREMENT, 
@@ -67,7 +64,7 @@ function pars($file, $way) {
 			EMAIL varchar(256) NOT NULL 
 		)");
 		if(isset($create)) {
-			logs('Coздана таблица '.$file);
+			logs('Coздана таблица '.$file, $connect);
 		}
 		$fopen = fopen($way, 'r');
 		$count = 0;
@@ -86,18 +83,17 @@ function pars($file, $way) {
 			}
 			if(isset($insert)) {
 				$count++;
-				logs('Добавлена запись №'.$count);
+				logs('Добавлена запись №'.$count, $connect);
 			}
 		}
 		fclose($fopen);
 	}
+	logs('Завершение сканирования', $connect);
 	mysqli_close($connect);
-	logs('Завершение сканирования');
 }
 
 
 $dir = "import";
 scan($dir);
-echo $count_file;
 
 ?>
